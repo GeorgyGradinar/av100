@@ -1,0 +1,11 @@
+:root {
+  --main-green-color: #2dc574;
+  --dark-green-color: #22a860;
+  --grey-color: #686869;
+  --light-grey-color: #e1e1e3;
+  --light-green-color: #68cd86;
+
+  --control-width: 470px;
+  --control-width-md: 390px;
+  --control-width-sm: 295px;
+}

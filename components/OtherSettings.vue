@@ -1,59 +1,56 @@
 <template>
-
-  <div class="wrapper-block">
-    <div class="title">Прочие настройки</div>
+  <SectionWrapper :title="'Прочие настройки'">
 
     <article>
-
-      <div class="form-control">
-        <section class="wrapper-dropdown">
+      <section class="form-control">
+        <div class="wrapper-dropdown">
           <p>Часовой пояс</p>
 
           <div class="dropdown">
-            <div class="select" @click="toggleOpenMenu" >
-              <span class="selected">{{ selectedCity }}</span>
-              <img src="../static/expand_more.svg" :class="{'rotate': isOpenDropDown }">
+            <div class="select" @click="toggleOpenMenu" v-click-outside="clickOutSide">
+              <span class="selected">{{ selectedCityName }}</span>
+              <img src="../static/expand_more.svg" :class="{'rotate': isOpenDropDown }" alt="arrow down">
             </div>
 
             <ul class="menu" :class="{'menu-open': isOpenDropDown }">
               <li v-for="city of cities" :key="city.id"
                   @click="selectionCity(city)"
-                  :class="{'active': selectedCity === city }">
-                <img class='image-select-city' src="../static/done.svg" :class="{'active': selectedCity === city }">
-                {{ city }}
+                  :class="{'active': selectedCity === city.id}">
+                <img class='image-select-city' src="../static/done.svg" :class="{'active': selectedCity === city.id }" alt="done">
+                {{ city.label }}
               </li>
             </ul>
           </div>
-        </section>
-      </div>
+        </div>
+      </section>
 
       <section class="form-control">
         <label class="wrapper-form">
-          <input type="checkbox" class="checkbox" name="checkbox"/>
+          <input type="checkbox" class="checkbox" name="checkbox" :checked="isAutoRedirectEnabled"/>
           <span class="custom-checkbox"></span>
           <span class="label">Автоматически переходить к новым объявлениям</span>
         </label>
-        <information :text="textInfoForAutoParams"></information>
+        <information :text="'Лента будет автоматически обновляться 1 раз в 3 секунды'"></information>
       </section>
 
       <section class="form-control">
         <label class="wrapper-form">
-          <input type="checkbox" class="checkbox" name="checkbox"/>
+          <input type="checkbox" class="checkbox" name="checkbox" :checked="isColorEnabled"/>
           <span class="custom-checkbox"></span>
           <span class="label">Включить цвета в ленте</span>
         </label>
-        <information :text="textInfoForTurnOnColor"></information>
+        <information :text="'Включение зеленого/желтого цвета'"></information>
       </section>
 
     </article>
-  </div>
-
+  </SectionWrapper>
 </template>
 
 <script>
 
-// import ClickOutside from 'vue-click-outside'
-import information from "~/components/information";
+import ClickOutside from 'vue-click-outside'
+import information from "~/components/Information";
+import {CITIES} from "~/config";
 
 export default {
   name: "OtherSettings",
@@ -62,17 +59,18 @@ export default {
     information
   },
 
-  // directives: {
-  //   ClickOutside
-  // },
+  directives: {
+    ClickOutside
+  },
 
   data() {
     return {
       isOpenDropDown: false,
-      cities: ['Калининград', 'Москва', 'Самара', 'Екатеринбург', 'Омск', 'Красноярск', 'Иркутск', 'Якутск', 'Владивосток', 'Магадан', 'Камчатка'],
-      selectedCity: 'Самара',
-      textInfoForAutoParams: 'Лента будет автоматически обновляться 1 раз в 3 секунды',
-      textInfoForTurnOnColor: 'Включение зеленого/желтого цвета'
+      cities: CITIES,
+      selectedCity: 'Moscow',
+      selectedCityName: 'Москва',
+      isColorEnabled: false,
+      isAutoRedirectEnabled: false,
     }
   },
 
@@ -82,12 +80,28 @@ export default {
     },
 
     selectionCity(city) {
-      this.selectedCity = city;
+      this.selectedCityName = city.label;
+      this.selectedCity = city.id;
       this.isOpenDropDown = false;
     },
 
     clickOutSide() {
       this.isOpenDropDown = false;
+    }
+  },
+
+  computed: {
+    user() {
+      return this.$store.state.user;
+    }
+  },
+
+  watch: {
+    user() {
+      this.isColorEnabled = this.user.colorlenta;
+      this.isAutoRedirectEnabled = !this.user.locklentaupdate;
+      this.selectedCity = this.user.timezonestring;
+      this.selectedCityName = this.cities.find(city => city.id === this.selectedCity)?.label;
     }
   }
 }
@@ -95,33 +109,17 @@ export default {
 
 <style scoped>
 
-.wrapper-block {
-  display: flex;
-}
-
-.title {
-  width: 250px;
-  font-weight: 600;
-  font-size: 15px;
-}
-
 article {
-  width: 490px;
+  width: 100%;
   display: flex;
   flex-direction: column;
   gap: 20px;
 }
 
 .form-control {
-  width: 370px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-}
-
-.form-control .wrapper-dropdown {
-  display: flex;
-  align-items: center;
   gap: 30px;
 }
 
@@ -129,6 +127,7 @@ article {
   display: flex;
   align-items: center;
   gap: 10px;
+  cursor: pointer;
 }
 
 .form-control p {
@@ -146,7 +145,7 @@ article {
   align-items: center;
   width: 20px;
   height: 20px;
-  border: 1px solid #2dc574;
+  border: 1px solid var(--main-green-color);
   border-radius: 2px;
   position: relative;
   cursor: pointer;
@@ -158,7 +157,7 @@ article {
   display: block;
   width: 100%;
   height: 100%;
-  background-color: #2dc574;
+  background-color: var(--main-green-color);
   background-size: contain;
   background-image: url("../static/done.svg");
   opacity: 0;
@@ -176,101 +175,34 @@ article {
   width: 250px;
 }
 
-.select {
-  width: 215px;
-  height: 28px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border: 1px #cdcdcd solid;
-  border-radius: 3px;
-  font-weight: 500;
-  padding: 0 10px;
-  transition: 0.2s;
-  cursor: pointer;
+@media screen and (max-width: 990px) and (min-width: 767px) {
+  .form-control p {
+    font-size: 12px;
+  }
+
+  .custom-checkbox {
+    width: 15px;
+    height: 15px;
+  }
+
+  .label {
+    width: 200px;
+    font-size: 9px;
+  }
 }
 
-.select:hover {
-  border: 1px #2dc574 solid;
+@media screen and (max-width: 767px) {
+  .form-control .wrapper-dropdown {
+    flex-direction: column;
+    gap: 5px;
+    align-items: flex-start;
+    width: 100%;
+  }
+
+  .form-control p {
+    font-weight: 600;
+    font-size: 15px;
+  }
 }
 
-.select img {
-  transition: 0.3s;
-  width: 15px;
-}
-
-.select img.rotate {
-  transform: rotate(180deg);
-}
-
-.selected {
-  font-size: 14px;
-}
-
-.menu {
-  height: 300px;
-  overflow: auto;
-  position: absolute;
-  list-style: none;
-  width: 215px;
-  background-color: #2dc574;
-  border-radius: 5px;
-  color: #fff;
-  opacity: 0;
-  display: none;
-  transition: .2s;
-  z-index: 1;
-}
-
-.menu::-webkit-scrollbar {
-  width: 6px;
-}
-
-.menu::-webkit-scrollbar-track {
-  background-color: #ededed;
-  border-radius: 10px;
-}
-
-.menu::-webkit-scrollbar-thumb {
-  background-color: #cdcdcd;
-  border-radius: 10px;
-  transition: 0.3s;
-}
-
-.menu::-webkit-scrollbar-thumb:hover {
-  background-color: #2dc574;
-}
-
-.menu li {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-  padding: 10px;
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: 500;
-}
-
-.menu li:hover {
-  background-color: #22a860;
-}
-
-.active {
-  background-color: #22a860;
-}
-
-.active img {
-  visibility: visible;
-}
-
-.menu-open {
-  display: block;
-  opacity: 1;
-}
-
-.image-select-city {
-  visibility: hidden;
-  width: 15px;
-  height: 15px;
-}
 </style>

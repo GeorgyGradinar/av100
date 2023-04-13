@@ -1,77 +1,65 @@
 <template>
-
-  <div class="wrapper-block">
-    <div class="title">Переход в карточку</div>
-
+  <SectionWrapper :title="'Переход в карточку'">
     <article>
       <span class="title-block">Выберите, каким образом будет открываться детальное представление выбранного вами транспорта.</span>
 
       <form class="form-control">
         <div class="checkbox">
-          <input type="radio" id="this-page" name="type-card" value="В карточку в текущем окне"/>
+          <input type="radio" id="this-page" name="type-card" value="0" :checked="typeRedirect === 0"/>
           <label for="this-page" class="label">В карточку в текущем окне</label>
         </div>
 
         <div class="checkbox">
-          <input type="radio" id="other-page" name="type-card" value="В карточку в отдельном окне"/>
+          <input type="radio" id="other-page" name="type-card" value="1" :checked="typeRedirect === 1"/>
           <label for="other-page" class="label">В карточку в отдельном окне</label>
         </div>
 
         <div class="checkbox source">
           <div>
-            <input type="radio" id="page" name="type-card" value="На источник"/>
+            <input type="radio" id="page" name="type-card" value="2" :checked="typeRedirect === 2"/>
             <label for="page" class="label">На источник</label>
           </div>
-          <information :text="textInfoForSource"></information>
+          <information :text="'Прямой переход в объявление на источнике'"></information>
         </div>
       </form>
 
     </article>
-  </div>
-
+  </SectionWrapper>
 </template>
 
 <script>
+import SectionWrapper from "~/components/SectionWrapper";
+
 export default {
   name: "GoToCard",
+  components: {SectionWrapper},
 
   data() {
     return {
-      textInfoForSource: 'Прямой переход в объявление на источнике',
+      typeRedirect: null
     }
   },
+
+  computed: {
+    user() {
+      return this.$store.state.user;
+    }
+  },
+
+  watch:{
+    user(){
+      this.typeRedirect = this.user.redirecttarget;
+    }
+  }
 }
 </script>
 
 <style scoped>
 
-.wrapper-block {
-  display: flex;
-}
-
-.title {
-  width: 250px;
-  font-weight: 600;
-  font-size: 15px;
-}
-
-.title-block {
-  display: inline-block;
-  width: 490px;
-  font-size: 14px;
-  font-weight: 400;
-  color: #686869;
-}
-
 article {
-  width: 490px;
   display: flex;
   flex-direction: column;
   gap: 20px;
-}
-
-.form-control{
-  width: 370px;
 }
 
 .checkbox {
@@ -79,21 +67,15 @@ article {
   gap: 5px;
   align-items: center;
   position: relative;
-  margin-bottom: 30px;
+  padding: 15px 0;
 }
 
 .checkbox:last-of-type {
   margin-bottom: 0;
 }
 
-.checkbox:not(:last-of-type):after {
-  content: '';
-  position: absolute;
-  top: 35px;
-  left: 0;
-  width: 370px;
-  height: 1px;
-  background-color: #e1e1e3;
+.checkbox:not(:last-of-type) {
+  border-bottom: 1px solid var(--light-grey-color);
 }
 
 .source {
@@ -104,7 +86,26 @@ article {
 .label {
   font-size: 14px;
   cursor: pointer;
-  color: #686869
+  color: var(--grey-color);
 }
 
+@media screen and (min-width: 767px) and (max-width: 990px) {
+  .checkbox {
+    padding: 15px 0
+  }
+
+  .label {
+    font-size: 12px;
+  }
+}
+
+@media screen and (max-width: 767px) {
+  .checkbox {
+    padding: 10px 0;
+  }
+
+  .checkbox:not(:last-of-type) {
+    border-bottom: unset;
+  }
+}
 </style>

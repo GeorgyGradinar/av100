@@ -1,73 +1,89 @@
 <template>
-  <div class="wrapper-block">
-    <div class="title">Учётная запись</div>
-
+  <SectionWrapper :title="'Учётная запись'">
     <form class="form-control">
-      <section>
-        <p>Компания</p>
-        <input type="text">
+      <section class="wrapper-input">
+        <p class="title-input">Компания</p>
+        <input type="text" :value="user.companyname" readonly>
       </section>
 
-      <section>
-        <p>Логин</p>
-        <input type="text">
+      <section class="wrapper-input">
+        <p class="title-input">Логин</p>
+        <input type="text" :value="user.login" readonly>
       </section>
 
-      <section>
-        <p>Номер телефона</p>
-        <input type="text">
+      <section class="wrapper-input">
+        <p class="title-input">Номер телефона</p>
+        <input type="text" v-model="phoneNumber">
       </section>
 
-      <section>
-        <p>Имя</p>
-        <input type="text">
+      <section class="wrapper-input">
+        <p class="title-input">Имя</p>
+        <input type="text" v-model="name">
       </section>
 
-      <section>
-        <p>Фамилия</p>
-        <div>
-          <input type="text">
-          <p>* Не обязательно</p>
+      <section class="wrapper-input">
+        <p class="title-input">Фамилия</p>
+        <div class="wrapper-input-info">
+          <input type="text" v-model="surname">
+          <p class="text-info">* Не обязательно</p>
         </div>
-
       </section>
     </form>
-
-  </div>
+  </SectionWrapper>
 </template>
 
 <script>
+import SectionWrapper from "~/components/SectionWrapper";
+
 export default {
-  name: "Account"
+  name: "Account",
+  components: {SectionWrapper},
+
+  data() {
+    return {
+      phoneNumber: '',
+      name: '',
+      surname: '',
+    }
+  },
+
+  computed: {
+    user() {
+      const currentUser = this.$store.state.user;
+
+      this.name = currentUser.fname;
+      this.phoneNumber = currentUser.phone;
+      this.surname = currentUser.lname;
+
+      return currentUser;
+    }
+  }
 }
 </script>
 
 <style scoped>
 
-.wrapper-block {
-  display: flex;
-  margin-bottom: 25px;
-}
-
-.title {
-  width: 250px;
-  font-weight: 600;
-  font-size: 15px;
-}
-
 .form-control {
-  width: 370px;
   display: flex;
   flex-direction: column;
   gap: 20px;
 }
 
-section {
+.wrapper-input {
   display: flex;
   justify-content: space-between;
 }
 
-section p {
+input,
+.wrapper-input-info {
+  width: 65%;
+}
+
+.wrapper-input-info input {
+  width: 100%;
+}
+
+.title-input {
   display: flex;
   align-items: center;
   width: 120px;
@@ -76,29 +92,45 @@ section p {
   cursor: pointer;
 }
 
-section input {
-  width: 240px;
-  border: 1px solid #e1e1e3;
-  padding: 6px 10px;
-  font-size: 15px;
-  font-weight: 400;
-  color: #686869;
-  border-radius: 3px;
-  transition: 0.2s;
-}
-
-section input:focus {
-  outline: 0;
-  outline-offset: 0;
-  border: 1px solid #2dc574;
-}
-
-input + p {
+.text-info {
   position: absolute;
-  padding-top: 5px;
-  width: 130px;
-  color: #a3a3a3;
   font-size: 12px;
+  font-weight: 400;
+  color: var(--grey-color);
+  margin-top: 5px;
+}
+
+@media screen and (min-width: 767px) and (max-width: 990px) {
+  .form-control {
+    gap: 18px;
+  }
+
+  .title-input {
+    width: 95px;
+    font-size: 12px;
+  }
+
+  .text-info {
+    font-size: 10px;
+    margin-top: 3px;
+  }
+}
+
+@media screen and (max-width: 767px) {
+  .wrapper-input {
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .title-input {
+    width: 100%;
+    font-weight: 600;
+  }
+
+  input,
+  .wrapper-input-info {
+    width: 100%;
+  }
 }
 
 </style>

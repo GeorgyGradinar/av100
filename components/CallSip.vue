@@ -1,25 +1,29 @@
 <template>
-  <div class="wrapper-block">
+  <section class="wrapper-block">
 
     <div class="title">
       Звонок через SIP
       <div class="container">
-        <input type="checkbox" class="checkbox" id="checkbox">
+        <input type="checkbox" class="checkbox" id="checkbox" :checked="user.calltype === '1'">
         <label class="switch" for="checkbox">
           <span class="slider"></span>
         </label>
       </div>
     </div>
 
-    <article>
-      <span class="title-block">Включите эту функцию чтобы Авито и другие площадки не блокировали ваш аккаунт. Будет выглядеть так, будто звонки совершаются с разных номеров.</span>
-    </article>
-  </div>
+    <span class="title-block">Включите эту функцию чтобы Авито и другие площадки не блокировали ваш аккаунт. Будет выглядеть так, будто звонки совершаются с разных номеров.</span>
+  </section>
 </template>
 
 <script>
 export default {
-  name: "CallSip"
+  name: "CallSip",
+
+  computed: {
+    user() {
+      return this.$store.state.user;
+    }
+  }
 }
 </script>
 
@@ -34,7 +38,7 @@ export default {
   display: flex;
   gap: 10px;
   font-weight: 600;
-  font-size: 15px;
+  font-size: 17px;
 }
 
 .container {
@@ -75,27 +79,12 @@ export default {
 }
 
 .checkbox:checked + .switch {
-  border: 2px solid #2dc574;
+  border: 2px solid var(--main-green-color);
 }
 
 .checkbox:checked + .switch .slider {
-  background-color: #2dc574;
+  background-color: var(--main-green-color);
   left: 15px;
-}
-
-.title-block {
-  display: inline-block;
-  width: 490px;
-  font-size: 14px;
-  font-weight: 400;
-  color: #686869;
-}
-
-article {
-  width: 490px;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
 }
 
 .wrapper-block {
@@ -103,18 +92,48 @@ article {
 }
 
 .title-block {
-  display: inline-block;
-  width: 490px;
-  font-size: 14px;
-  font-weight: 400;
-  color: #686869;
+  max-width: var(--control-width);
 }
 
-article {
-  width: 490px;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
+
+@media screen and (min-width: 767px) and (max-width: 990px) {
+  .title {
+    width: 200px;
+    font-size: 14px;
+  }
+
+  .container {
+    width: 28px;
+    height: 16px;
+  }
+
+  .switch {
+    border: 1px solid #bababa;
+  }
+
+  .slider {
+    width: 15px;
+    height: 15px;
+  }
+
+  .checkbox:checked + .switch {
+    border: 1px solid var(--main-green-color);
+  }
+
+  .checkbox:checked + .switch .slider {
+    left: 12px;
+  }
+
+  .title-block {
+    max-width: var(--control-width-md);
+  }
+}
+
+@media screen and (max-width: 767px) {
+  .wrapper-block {
+    flex-direction: column;
+    gap: 20px;
+  }
 }
 
 </style>

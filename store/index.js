@@ -1,23 +1,43 @@
 import axios from "axios";
+import {DATA_LOGIN, HEADERS, URL_SERVER} from "~/config";
 
 export const state = () => ({
-  user: {}
+  user: {},
+  userToken: ''
 })
 
 export const actions = {
-  async getUserData({commit}) {
-    const response = await axios.post('https://api.av100.ru/v3/login', {
-      "login": "9264641870",
-      "password": "4716468225",
-      "fromuser": 0
-    }, {headers: {'X-Api-Key': '8bcfb6e1-4fa8-4fae-872c-a435bbdbe8d9'}})
-    const user = response.data.user
-    commit("setUser", user)
+  async login({commit, dispatch}) {
+    const response = await axios.post(`${URL_SERVER}login`, DATA_LOGIN, {headers: HEADERS});
+    const user = response.data.user;
+    const userToken = response.data.token;
+
+    commit("setUserToken", userToken);
+    dispatch("getUserData", {token: userToken, userId: user.id})
+  },
+
+  async getUserData({commit, dispatch}, payload) {
+    const headers = {headers: {...HEADERS, 'X-User-Token': payload.token}};
+
+    const response = await axios.get(`${URL_SERVER}user/${payload.userId}`, headers);
+    const user = response.data;
+
+    commit("setUser", user);
+  },
+
+  async updateUserData({commit}, payload) {
+    const headers = {headers: {...HEADERS, 'X-User-Token': payload.token}};
+
+    await axios.put(`${URL_SERVER}user/${payload.user.id}`, payload.user, headers);
   }
 }
 
 export const mutations = {
   setUser(state, data) {
-    state.user = data
+    state.user = data;
+  },
+
+  setUserToken(state, data) {
+    state.userToken = data;
   },
 }
