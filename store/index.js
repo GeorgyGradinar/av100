@@ -13,7 +13,7 @@ export const actions = {
     const userToken = response.data.token;
 
     commit("setUserToken", userToken);
-    dispatch("getUserData", {token: userToken, userId: user.id})
+    dispatch("getUserData", {token: userToken, userId: user.id});
   },
 
   async getUserData({commit, dispatch}, payload) {

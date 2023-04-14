@@ -5,18 +5,18 @@
 
       <form class="form-control">
         <div class="checkbox">
-          <input type="radio" id="this-page" name="type-card" value="0" :checked="typeRedirect === 0"/>
+          <input type="radio" id="this-page" name="type-card" value="0" :checked="user.redirecttarget === 0"/>
           <label for="this-page" class="label">В карточку в текущем окне</label>
         </div>
 
         <div class="checkbox">
-          <input type="radio" id="other-page" name="type-card" value="1" :checked="typeRedirect === 1"/>
+          <input type="radio" id="other-page" name="type-card" value="1" :checked="user.redirecttarget === 1"/>
           <label for="other-page" class="label">В карточку в отдельном окне</label>
         </div>
 
         <div class="checkbox source">
           <div>
-            <input type="radio" id="page" name="type-card" value="2" :checked="typeRedirect === 2"/>
+            <input type="radio" id="page" name="type-card" value="2" :checked="user.redirecttarget === 2"/>
             <label for="page" class="label">На источник</label>
           </div>
           <information :text="'Прямой переход в объявление на источнике'"></information>
@@ -45,12 +45,6 @@ export default {
       return this.$store.state.user;
     }
   },
-
-  watch:{
-    user(){
-      this.typeRedirect = this.user.redirecttarget;
-    }
-  }
 }
 </script>
 
